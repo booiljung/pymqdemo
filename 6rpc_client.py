@@ -3,6 +3,7 @@ import pika
 import uuid
 
 class FibonacciRpcClient(object):
+
     def __init__(self):
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 
@@ -11,8 +12,7 @@ class FibonacciRpcClient(object):
         result = self.channel.queue_declare(exclusive=True)
         self.callback_queue = result.method.queue
 
-        self.channel.basic_consume(self.on_response, no_ack=True,
-                                   queue=self.callback_queue)
+        self.channel.basic_consume(self.on_response, no_ack=True, queue=self.callback_queue)
 
     def on_response(self, ch, method, props, body):
         if self.corr_id == props.correlation_id:
@@ -31,6 +31,7 @@ class FibonacciRpcClient(object):
         while self.response is None:
             self.connection.process_data_events()
         return int(self.response)
+
 
 fibonacci_rpc = FibonacciRpcClient()
 
